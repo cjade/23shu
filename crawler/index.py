@@ -3,6 +3,7 @@
 import os
 import re
 import requests
+import threading
 from lxml import etree
 
 
@@ -17,7 +18,7 @@ def get_html(url, name):
     content = html.xpath('//dd[@id="contents"]')
     c = etree.tostring(content[0], encoding='utf-8', method='text').decode('utf-8')
     c = re.sub("(\n+)|(\r\n)+|(<br>)+", '', c)
-    write_content_to_file('儒道至圣/'+str(name)+'.txt', c)
+    write_content_to_file('books/儒道至圣/'+str(name)+'.txt', c)
 
 
 def write_content_to_file(file_name, file_data):
@@ -54,12 +55,17 @@ def get_index():
     url = 'https://www.23us.so/files/article/html/2/2521/index.html'
     html = get_resource(url)
     content = html.xpath('//td[@class="L"]')
-    mkdir('儒道至圣')
+    mkdir('books/儒道至圣')
+
+    i = 1
     for key, index in enumerate(content):
         c = etree.tostring(index, encoding='utf-8', method='html').decode('utf-8')
         lists = re.findall(r'<td class="L"><a href="(.+?)">(.+?)</a></td>', c)
         for href, name in lists:
-            get_html(href, name)
+            print(i)
+            # get_html(href, name)
+
+        i += 1
 
 
 def get_resource(url):
